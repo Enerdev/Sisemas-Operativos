@@ -1,0 +1,339 @@
+
+============================================================
+EJERCICIO 1
+============================================================
+
+--- FCFS ---
+|     P0      |  P1   | P2  |   P3    |
+0             6       9     11        15
+CPU por unidad: P0 P0 P0 P0 P0 P0 P1 P1 P1 P2 P2 P3 P3 P3 P3
+Proc  Lleg  Ráf  Fin  Ret  Esp
+P0       0    6    6    6    0
+P1       1    3    9    8    5
+P2       3    2   11    8    6
+P3       5    4   15   10    6
+Retorno medio = 8.00 | Espera media = 4.25 | Varianza espera = 6.19
+
+--- SJF ---
+|     P0      | P2  |  P1   |   P3    |
+0             6     8       11        15
+CPU por unidad: P0 P0 P0 P0 P0 P0 P2 P2 P1 P1 P1 P3 P3 P3 P3
+Proc  Lleg  Ráf  Fin  Ret  Esp
+P0       0    6    6    6    0
+P1       1    3   11   10    7
+P2       3    2    8    5    3
+P3       5    4   15   10    6
+Retorno medio = 7.75 | Espera media = 4.00 | Varianza espera = 7.50
+
+--- SRTF ---
+| P0 |  P1   | P2  |   P3    |    P0     |
+0   1       4     6         10          15
+CPU por unidad: P0 P1 P1 P1 P2 P2 P3 P3 P3 P3 P0 P0 P0 P0 P0
+Proc  Lleg  Ráf  Fin  Ret  Esp
+P0       0    6   15   15    9
+P1       1    3    4    3    0
+P2       3    2    6    3    1
+P3       5    4   10    5    1
+Retorno medio = 6.50 | Espera media = 2.75 | Varianza espera = 13.19
+
+--- RR q=2 ---
+| P0  | P1  | P0  | P2  | P1 | P3  | P0  | P3  |
+0     2     4     6     8   9     11    13    15
+CPU por unidad: P0 P0 P1 P1 P0 P0 P2 P2 P1 P3 P3 P0 P0 P3 P3
+Proc  Lleg  Ráf  Fin  Ret  Esp
+P0       0    6   13   13    7
+P1       1    3    9    8    5
+P2       3    2    8    5    3
+P3       5    4   15   10    6
+Retorno medio = 9.00 | Espera media = 5.25 | Varianza espera = 2.19
+
+Resumen:
+  FCFS                     Ret=  8.00  Esp=  4.25  Var=  6.19
+  SJF                      Ret=  7.75  Esp=  4.00  Var=  7.50
+  SRTF                     Ret=  6.50  Esp=  2.75  Var= 13.19
+  RR q=2                   Ret=  9.00  Esp=  5.25  Var=  2.19
+
+============================================================
+EJERCICIO 2
+============================================================
+
+--- FCFS ---
+|  A  | B |        C        |   D   |     E     |
+0     2   3                 11      14          19
+CPU por unidad: A A B C C C C C C C C D D D E E E E E
+Proc  Lleg  Ráf  Fin  Ret  Esp
+A        0    2    2    2    0
+B        0    1    3    3    2
+C        0    8   11   11    3
+D        0    3   14   14   11
+E        0    5   19   19   14
+Retorno medio = 9.80 | Espera media = 6.00 | Varianza espera = 30.00
+
+--- SJF ---
+| B |  A  |   D   |     E     |        C        |
+0   1     3       6           11                19
+CPU por unidad: B A A D D D E E E E E C C C C C C C C
+Proc  Lleg  Ráf  Fin  Ret  Esp
+A        0    2    3    3    1
+B        0    1    1    1    0
+C        0    8   19   19   11
+D        0    3    6    6    3
+E        0    5   11   11    6
+Retorno medio = 8.00 | Espera media = 4.20 | Varianza espera = 15.76
+
+--- RR q=1 ---
+| A | B | C | D | E | A | C | D | E | C | D | E | C | E | C | E |   C   |
+0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15  16      19
+CPU por unidad: A B C D E A C D E C D E C E C E C C C
+Proc  Lleg  Ráf  Fin  Ret  Esp
+A        0    2    6    6    4
+B        0    1    2    2    1
+C        0    8   19   19   11
+D        0    3   11   11    8
+E        0    5   16   16   11
+Retorno medio = 10.80 | Espera media = 7.00 | Varianza espera = 15.60
+
+--- RR q=3 ---
+|  A  | B |   C   |   D   |   E   |   C   |  E  |  C  |
+0     2   3       6       9       12      15    17    19
+CPU por unidad: A A B C C C D D D E E E C C C E E C C
+Proc  Lleg  Ráf  Fin  Ret  Esp
+A        0    2    2    2    0
+B        0    1    3    3    2
+C        0    8   19   19   11
+D        0    3    9    9    6
+E        0    5   17   17   12
+Retorno medio = 10.00 | Espera media = 6.20 | Varianza espera = 22.56
+
+Resumen:
+  FCFS                     Ret=  9.80  Esp=  6.00  Var= 30.00
+  SJF                      Ret=  8.00  Esp=  4.20  Var= 15.76
+  RR q=1                   Ret= 10.80  Esp=  7.00  Var= 15.60
+  RR q=3                   Ret= 10.00  Esp=  6.20  Var= 22.56
+
+============================================================
+EJERCICIO 3
+============================================================
+
+--- FCFS ---
+|   A   |     B     |  C  |     D     |     E     |
+0       3           8     10          15          20
+CPU por unidad: A A A B B B B B C C D D D D D E E E E E
+Proc  Lleg  Ráf  Fin  Ret  Esp
+A        0    3    3    3    0
+B        1    5    8    7    2
+C        3    2   10    7    5
+D        9    5   15    6    1
+E       12    5   20    8    3
+Retorno medio = 6.20 | Espera media = 2.20 | Varianza espera = 2.96
+
+--- SJF ---
+|   A   |  C  |     B     |     D     |     E     |
+0       3     5           10          15          20
+CPU por unidad: A A A C C B B B B B D D D D D E E E E E
+Proc  Lleg  Ráf  Fin  Ret  Esp
+A        0    3    3    3    0
+B        1    5   10    9    4
+C        3    2    5    2    0
+D        9    5   15    6    1
+E       12    5   20    8    3
+Retorno medio = 5.60 | Espera media = 1.60 | Varianza espera = 2.64
+
+--- SRTF ---
+|   A   |  C  |     B     |     D     |     E     |
+0       3     5           10          15          20
+CPU por unidad: A A A C C B B B B B D D D D D E E E E E
+Proc  Lleg  Ráf  Fin  Ret  Esp
+A        0    3    3    3    0
+B        1    5   10    9    4
+C        3    2    5    2    0
+D        9    5   15    6    1
+E       12    5   20    8    3
+Retorno medio = 5.60 | Espera media = 1.60 | Varianza espera = 2.64
+
+--- RR q=4 ---
+|   A   |    B    |  C  | B |    D    |    E    | D | E |
+0       3         7     9   10        14        18  19  20
+CPU por unidad: A A A B B B B C C B D D D D E E E E D E
+Proc  Lleg  Ráf  Fin  Ret  Esp
+A        0    3    3    3    0
+B        1    5   10    9    4
+C        3    2    9    6    4
+D        9    5   19   10    5
+E       12    5   20    8    3
+Retorno medio = 7.20 | Espera media = 3.20 | Varianza espera = 2.96
+
+Resumen:
+  FCFS                     Ret=  6.20  Esp=  2.20  Var=  2.96
+  SJF                      Ret=  5.60  Esp=  1.60  Var=  2.64
+  SRTF                     Ret=  5.60  Esp=  1.60  Var=  2.64
+  RR q=4                   Ret=  7.20  Esp=  3.20  Var=  2.96
+
+============================================================
+EJERCICIO 5
+============================================================
+
+--- FCFS ---
+|     P0      |  P1   | P2  |   P3    |
+0             6       9     11        15
+CPU por unidad: P0 P0 P0 P0 P0 P0 P1 P1 P1 P2 P2 P3 P3 P3 P3
+Proc  Lleg  Ráf  Fin  Ret  Esp
+P0       0    6    6    6    0
+P1       1    3    9    8    5
+P2       3    2   11    8    6
+P3       5    4   15   10    6
+Retorno medio = 8.00 | Espera media = 4.25 | Varianza espera = 6.19
+
+--- SJF ---
+|     P0      | P2  |  P1   |   P3    |
+0             6     8       11        15
+CPU por unidad: P0 P0 P0 P0 P0 P0 P2 P2 P1 P1 P1 P3 P3 P3 P3
+Proc  Lleg  Ráf  Fin  Ret  Esp
+P0       0    6    6    6    0
+P1       1    3   11   10    7
+P2       3    2    8    5    3
+P3       5    4   15   10    6
+Retorno medio = 7.75 | Espera media = 4.00 | Varianza espera = 7.50
+
+--- SRTF ---
+| P0 |  P1   | P2  |   P3    |    P0     |
+0   1       4     6         10          15
+CPU por unidad: P0 P1 P1 P1 P2 P2 P3 P3 P3 P3 P0 P0 P0 P0 P0
+Proc  Lleg  Ráf  Fin  Ret  Esp
+P0       0    6   15   15    9
+P1       1    3    4    3    0
+P2       3    2    6    3    1
+P3       5    4   10    5    1
+Retorno medio = 6.50 | Espera media = 2.75 | Varianza espera = 13.19
+
+--- RR q=2 ---
+| P0  | P1  | P0  | P2  | P1 | P3  | P0  | P3  |
+0     2     4     6     8   9     11    13    15
+CPU por unidad: P0 P0 P1 P1 P0 P0 P2 P2 P1 P3 P3 P0 P0 P3 P3
+Proc  Lleg  Ráf  Fin  Ret  Esp
+P0       0    6   13   13    7
+P1       1    3    9    8    5
+P2       3    2    8    5    3
+P3       5    4   15   10    6
+Retorno medio = 9.00 | Espera media = 5.25 | Varianza espera = 2.19
+
+--- RR q=3 ---
+|  P0   |  P1   | P2  |  P0   |   P3    |
+0       3       6     8       11        15
+CPU por unidad: P0 P0 P0 P1 P1 P1 P2 P2 P0 P0 P0 P3 P3 P3 P3
+Proc  Lleg  Ráf  Fin  Ret  Esp
+P0       0    6   11   11    5
+P1       1    3    6    5    2
+P2       3    2    8    5    3
+P3       5    4   15   10    6
+Retorno medio = 7.75 | Espera media = 4.00 | Varianza espera = 2.50
+
+Resumen:
+  FCFS                     Ret=  8.00  Esp=  4.25  Var=  6.19
+  SJF                      Ret=  7.75  Esp=  4.00  Var=  7.50
+  SRTF                     Ret=  6.50  Esp=  2.75  Var= 13.19
+  RR q=2                   Ret=  9.00  Esp=  5.25  Var=  2.19
+  RR q=3                   Ret=  7.75  Esp=  4.00  Var=  2.50
+
+============================================================
+EJERCICIO 6
+============================================================
+
+--- FCFS ---
+|     A     |  B  |      C      |    D    |   E   |
+0           5     7             13        17      20
+CPU por unidad: A A A A A B B C C C C C C D D D D E E E
+Proc  Lleg  Ráf  Fin  Ret  Esp
+A        0    5    5    5    0
+B        0    2    7    7    5
+C        0    6   13   13    7
+D        0    4   17   17   13
+E        0    3   20   20   17
+Retorno medio = 12.40 | Espera media = 8.40 | Varianza espera = 35.84
+
+--- SJF ---
+|  B  |   E   |    D    |     A     |      C      |
+0     2       5         9           14            20
+CPU por unidad: B B E E E D D D D A A A A A C C C C C C
+Proc  Lleg  Ráf  Fin  Ret  Esp
+A        0    5   14   14    9
+B        0    2    2    2    0
+C        0    6   20   20   14
+D        0    4    9    9    5
+E        0    3    5    5    2
+Retorno medio = 10.00 | Espera media = 6.00 | Varianza espera = 25.20
+
+--- RR q=2 ---
+|  A  |  B  |  C  |  D  |  E  |  A  |  C  |  D  | E | A |  C  |
+0     2     4     6     8     10    12    14    16  17  18    20
+CPU por unidad: A A B B C C D D E E A A C C D D E A C C
+Proc  Lleg  Ráf  Fin  Ret  Esp
+A        0    5   18   18   13
+B        0    2    4    4    2
+C        0    6   20   20   14
+D        0    4   16   16   12
+E        0    3   17   17   14
+Retorno medio = 15.00 | Espera media = 11.00 | Varianza espera = 20.80
+
+Resumen:
+  FCFS                     Ret= 12.40  Esp=  8.40  Var= 35.84
+  SJF                      Ret= 10.00  Esp=  6.00  Var= 25.20
+  RR q=2                   Ret= 15.00  Esp= 11.00  Var= 20.80
+
+============================================================
+EJERCICIO 7
+============================================================
+
+--- FCFS ---
+|         P1          | P2 | P3  | P4 |    P5     |
+0                     10  11    13  14          19
+CPU por unidad: P1 P1 P1 P1 P1 P1 P1 P1 P1 P1 P2 P3 P3 P4 P5 P5 P5 P5 P5
+Proc  Lleg  Ráf  Fin  Ret  Esp
+P1       0   10   10   10    0
+P2       0    1   11   11   10
+P3       0    2   13   13   11
+P4       0    1   14   14   13
+P5       0    5   19   19   14
+Retorno medio = 13.40 | Espera media = 9.60 | Varianza espera = 25.04
+
+--- SJF ---
+| P2 | P4 | P3  |    P5     |         P1          |
+0   1   2     4           9                     19
+CPU por unidad: P2 P4 P3 P3 P5 P5 P5 P5 P5 P1 P1 P1 P1 P1 P1 P1 P1 P1 P1
+Proc  Lleg  Ráf  Fin  Ret  Esp
+P1       0   10   19   19    9
+P2       0    1    1    1    0
+P3       0    2    4    4    2
+P4       0    1    2    2    1
+P5       0    5    9    9    4
+Retorno medio = 7.00 | Espera media = 3.20 | Varianza espera = 10.16
+
+--- Prioridad no expulsiva ---
+| P2 |    P5     |         P1          | P3  | P4 |
+0   1           6                     16    18  19
+CPU por unidad: P2 P5 P5 P5 P5 P5 P1 P1 P1 P1 P1 P1 P1 P1 P1 P1 P3 P3 P4
+Proc  Lleg  Ráf  Fin  Ret  Esp
+P1       0   10   16   16    6
+P2       0    1    1    1    0
+P3       0    2   18   18   16
+P4       0    1   19   19   18
+P5       0    5    6    6    1
+Retorno medio = 12.00 | Espera media = 8.20 | Varianza espera = 56.16
+
+--- RR q=1 ---
+| P1 | P2 | P3 | P4 | P5 | P1 | P3 | P5 | P1 | P5 | P1 | P5 | P1 | P5 |    P1     |
+0   1   2   3   4   5   6   7   8   9   10  11  12  13  14          19
+CPU por unidad: P1 P2 P3 P4 P5 P1 P3 P5 P1 P5 P1 P5 P1 P5 P1 P1 P1 P1 P1
+Proc  Lleg  Ráf  Fin  Ret  Esp
+P1       0   10   19   19    9
+P2       0    1    2    2    1
+P3       0    2    7    7    5
+P4       0    1    4    4    3
+P5       0    5   14   14    9
+Retorno medio = 9.20 | Espera media = 5.40 | Varianza espera = 10.24
+
+Resumen:
+  FCFS                     Ret= 13.40  Esp=  9.60  Var= 25.04
+  SJF                      Ret=  7.00  Esp=  3.20  Var= 10.16
+  Prioridad no expulsiva   Ret= 12.00  Esp=  8.20  Var= 56.16
+  RR q=1                   Ret=  9.20  Esp=  5.40  Var= 10.24
