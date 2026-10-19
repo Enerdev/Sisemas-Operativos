@@ -1,0 +1,1095 @@
+<meta charset="utf-8">
+<title>Barbero Dormilón</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: barra superior con pestañas · panel de configuración a la izquierda · "barbería" en vivo a la derecha.
+   Motivo visual: el poste de barbero (rojo / blanco / azul) que gira solo cuando el hilo barbero está cortando. */
+:root{
+  --bg:#eef0f4; --surface:#ffffff; --surface2:#f6f7fa; --line:#d9dde6; --line2:#c3c9d6;
+  --ink:#151a2c; --ink2:#4e5670; --ink3:#838aa0;
+  --pole-red:#c42a3c; --pole-blue:#2350b8; --pole-white:#ffffff;
+  --accent:#2350b8; --accent-ink:#ffffff; --accent-soft:#e3eafb;
+  --ok:#11845b; --ok-soft:#ddf3ea; --warn:#b26a00; --warn-soft:#fcefd8; --bad:#c42a3c; --bad-soft:#fbe3e6;
+  --sleep:#6b5bd2; --sleep-soft:#ebe8fb;
+  --shadow:0 1px 2px rgba(21,26,44,.06),0 2px 8px rgba(21,26,44,.05);
+  --wall:#e7eaf1; --tile-a:#ffffff; --tile-b:#d3d8e3; --leather:#b8283a; --leather2:#8f1d2c; --frame:#3a4058; --head:#d9a37e;
+  --f-display:'Archivo','Arial Narrow',system-ui,sans-serif;
+  --f-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,'Cascadia Mono',Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0c0f18; --surface:#141927; --surface2:#1a2031; --line:#262e44; --line2:#36405c;
+  --ink:#e9ecf4; --ink2:#a3abc2; --ink3:#6c7590;
+  --pole-red:#ef4a5d; --pole-blue:#5b86f0; --pole-white:#e9ecf4;
+  --accent:#6f95f5; --accent-ink:#0c0f18; --accent-soft:#1d2a4d;
+  --ok:#3ccf93; --ok-soft:#10301f; --warn:#f2b04a; --warn-soft:#33240a; --bad:#ff6476; --bad-soft:#3a1219;
+  --sleep:#a597ff; --sleep-soft:#241f45;
+  --shadow:0 1px 2px rgba(0,0,0,.3);
+  --wall:#192033; --tile-a:#232b45; --tile-b:#121725; --leather:#c23a4c; --leather2:#8a2433; --frame:#9aa2ba; --head:#d9a37e;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0c0f18; --surface:#141927; --surface2:#1a2031; --line:#262e44; --line2:#36405c;
+  --ink:#e9ecf4; --ink2:#a3abc2; --ink3:#6c7590;
+  --pole-red:#ef4a5d; --pole-blue:#5b86f0; --pole-white:#e9ecf4;
+  --accent:#6f95f5; --accent-ink:#0c0f18; --accent-soft:#1d2a4d;
+  --ok:#3ccf93; --ok-soft:#10301f; --warn:#f2b04a; --warn-soft:#33240a; --bad:#ff6476; --bad-soft:#3a1219;
+  --sleep:#a597ff; --sleep-soft:#241f45;
+  --shadow:0 1px 2px rgba(0,0,0,.3);
+  --wall:#192033; --tile-a:#232b45; --tile-b:#121725; --leather:#c23a4c; --leather2:#8a2433; --frame:#9aa2ba; --head:#d9a37e;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.5}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+/* ── Barra superior */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.top-in{max-width:1440px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.pole{width:14px;height:40px;border-radius:7px;border:2px solid var(--ink);flex:none;
+  background:repeating-linear-gradient(135deg,var(--pole-red) 0 6px,var(--pole-white) 6px 12px,var(--pole-blue) 12px 18px,var(--pole-white) 18px 24px);
+  background-size:100% 34px}
+.pole.spin{animation:pole 1.1s linear infinite}
+@keyframes pole{to{background-position:0 34px}}
+.brand h1{font-family:var(--f-display);font-weight:900;font-size:22px;letter-spacing:-.02em;margin:0;line-height:1.05;text-transform:uppercase}
+.brand p{margin:0;font-size:12px;color:var(--ink2)}
+.tabs{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
+.tab{border:1px solid transparent;background:none;padding:7px 12px;border-radius:7px;cursor:pointer;font-weight:600;color:var(--ink2)}
+.tab:hover{background:var(--surface2);color:var(--ink)}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.themebtn{border:1px solid var(--line2);background:var(--surface2);border-radius:999px;padding:6px 12px;cursor:pointer;font-weight:600;font-size:13px}
+
+.wrap{max-width:1440px;margin:0 auto;padding-inline:20px;padding-block:18px 40px}
+.view[hidden]{display:none!important}
+
+/* ── Simulador */
+.sim{display:grid;grid-template-columns:300px minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:980px){.sim{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+.panel-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.panel-h h2,.panel-h h3{margin:0;font-family:var(--f-display);font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+.panel-b{padding:14px 16px}
+.hint{color:var(--ink3);font-size:12px}
+
+.cfg{position:sticky;top:76px}
+@media (max-width:980px){.cfg{position:static}}
+.field{display:grid;gap:4px;margin-bottom:12px}
+.field label{font-size:12px;font-weight:600;color:var(--ink2);display:flex;justify-content:space-between}
+.field label output{font-family:var(--f-mono);color:var(--ink)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+input[type=number],select{width:100%;padding:7px 9px;border:1px solid var(--line2);border-radius:7px;background:var(--surface2)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.check{display:flex;gap:8px;align-items:flex-start;font-size:13px;margin-bottom:10px;cursor:pointer}
+.check input{margin-top:3px;accent-color:var(--accent)}
+.check small{display:block;color:var(--ink3);font-size:11.5px}
+.sep{height:1px;background:var(--line);margin:14px 0}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line2);background:var(--surface2);padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:600;font-size:13px}
+.btn:hover{border-color:var(--ink3)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.grow{flex:1}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+.main{display:grid;gap:18px;min-width:0}
+
+/* Reloj y estado */
+.statusbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.clock{font-family:var(--f-display);font-weight:900;font-size:34px;line-height:1;letter-spacing:-.02em}
+.clock small{font-family:var(--f-body);font-weight:500;font-size:12px;color:var(--ink3);letter-spacing:0;margin-left:4px}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.p-run{background:var(--ok-soft);color:var(--ok)} .p-pause{background:var(--warn-soft);color:var(--warn)}
+.p-done{background:var(--accent-soft);color:var(--accent)} .p-bad{background:var(--bad-soft);color:var(--bad)}
+.casename{font-weight:600;color:var(--ink2)}
+
+/* Barbería */
+.shop{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:16px}
+@media (max-width:640px){.shop{grid-template-columns:minmax(0,1fr)}}
+.zone-t{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink3);margin:0 0 8px}
+.barbers{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.barber{border:1px solid var(--line);border-radius:10px;padding:10px;display:grid;grid-template-columns:auto 1fr;gap:10px;background:var(--surface2);transition:border-color .2s}
+.barber.cortando{border-color:var(--ok)}
+.barber.dormido{border-color:var(--sleep)}
+.barber .pole{height:54px}
+.b-name{font-family:var(--f-display);font-weight:800;font-size:15px}
+.b-state{font-size:12px;font-weight:600}
+.b-state.cortando{color:var(--ok)} .b-state.dormido{color:var(--sleep)} .b-state.libre{color:var(--ink3)}
+.zzz{font-family:var(--f-mono);color:var(--sleep);animation:zz 1.6s ease-in-out infinite}
+@keyframes zz{50%{opacity:.35}}
+.prog{height:6px;background:var(--line);border-radius:4px;overflow:hidden;margin-top:6px}
+.prog i{display:block;height:100%;background:var(--ok);transition:width .25s}
+.b-meta{font-size:11.5px;color:var(--ink3);font-family:var(--f-mono)}
+
+/* Sala de espera: pared + piso de baldosas a cuadros, sillas de cuero */
+.room{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden;
+  background:
+    linear-gradient(var(--wall),var(--wall)) top/100% 62% no-repeat,
+    repeating-conic-gradient(var(--tile-a) 0 25%,var(--tile-b) 0 50%) 0 0/22px 22px;
+  padding:14px 14px 10px}
+.room::before{content:"";position:absolute;left:0;right:0;top:62%;height:3px;background:var(--frame);opacity:.35}
+.room-sign{position:relative;display:inline-flex;gap:6px;align-items:center;font-family:var(--f-mono);font-size:11px;font-weight:600;
+  background:var(--surface);border:1px solid var(--line2);border-radius:6px;padding:2px 8px;margin-bottom:8px;color:var(--ink2)}
+.room-sign b{color:var(--ink)}
+.chairs{position:relative;display:flex;flex-wrap:wrap;gap:6px 4px;align-items:flex-end}
+.seat{width:70px;display:grid;justify-items:center;gap:2px;position:relative}
+.seat svg{width:62px;height:72px;display:block;overflow:visible}
+.seat .tag{font-family:var(--f-mono);font-size:11.5px;font-weight:700;line-height:1.1;background:var(--surface);border:1px solid var(--line2);border-radius:5px;padding:1px 6px;min-width:34px;text-align:center}
+.seat .sub{font-family:var(--f-mono);font-size:10px;color:var(--ink2);line-height:1.1;min-height:11px}
+.seat.empty .tag{color:var(--ink3);font-weight:500;border-style:dashed}
+.seat.standing .tag{background:var(--bad);border-color:var(--bad);color:#fff}
+.seat .badge{position:absolute;top:-2px;right:2px;font-family:var(--f-mono);font-size:9.5px;font-weight:700;border-radius:999px;padding:0 5px;color:#fff}
+.seat .long{position:absolute;top:-2px;left:2px;font-size:11px}
+.seat.new .who{animation:sitdown .45s cubic-bezier(.3,1.4,.5,1)}
+@keyframes sitdown{from{transform:translateY(-14px);opacity:0}to{transform:none;opacity:1}}
+.who{transform-box:fill-box}
+.c-leg{stroke:var(--frame);stroke-width:3;stroke-linecap:round}
+.c-back{fill:var(--leather)} .c-seat{fill:var(--leather2)} .c-arm{fill:var(--frame)}
+.c-stitch{fill:none;stroke:rgba(255,255,255,.28);stroke-width:1;stroke-dasharray:2 2}
+.p-head{fill:var(--head)} .p-legs{fill:var(--frame)}
+.empty-room{position:relative;font-size:12.5px;color:var(--ink2);padding:6px 0}
+.door{border-left:1px solid var(--line);padding-left:16px;display:grid;gap:10px;align-content:start}
+@media (max-width:640px){.door{border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:12px;grid-template-columns:repeat(3,1fr)}}
+.dstat b{display:block;font-family:var(--f-display);font-size:24px;font-weight:900;line-height:1.1;font-variant-numeric:tabular-nums}
+.dstat span{font-size:11.5px;color:var(--ink2)}
+
+/* Memoria compartida / semáforos */
+.shared{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.sem{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--surface2)}
+.sem .k{font-family:var(--f-mono);font-size:12px;color:var(--ink2)}
+.sem .v{font-family:var(--f-display);font-weight:900;font-size:26px;line-height:1.1;font-variant-numeric:tabular-nums}
+.sem .d{font-size:11px;color:var(--ink3)}
+.sem.alert{border-color:var(--bad);background:var(--bad-soft)}
+.sem.alert .v{color:var(--bad)}
+
+/* Estadísticas */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1px;background:var(--line);border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+.stat{background:var(--surface);padding:10px 12px}
+.stat .k{font-size:11px;color:var(--ink3);text-transform:uppercase;letter-spacing:.07em;font-weight:600}
+.stat .v{font-family:var(--f-mono);font-size:18px;font-weight:600}
+
+/* Gantt */
+.gantt-wrap{overflow-x:auto;padding-bottom:4px}
+.gantt-wrap svg{display:block}
+.g-lbl{font-family:var(--f-mono);font-size:11px;fill:var(--ink2)}
+.g-tick{font-family:var(--f-mono);font-size:10px;fill:var(--ink3)}
+.g-grid{stroke:var(--line);stroke-width:1}
+.g-bar-t{font-family:var(--f-mono);font-size:10px;fill:#fff;font-weight:600}
+.g-now{stroke:var(--bad);stroke-width:1.5}
+
+/* Tablas */
+.two{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:18px}
+@media (max-width:1180px){.two{grid-template-columns:minmax(0,1fr)}}
+.tbl-wrap{overflow:auto;max-height:340px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);font-weight:600;padding:7px 10px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surface)}
+td{padding:6px 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;white-space:nowrap}
+.st{display:inline-block;padding:1px 8px;border-radius:999px;font-size:11px;font-weight:600}
+.st-nuevo{background:var(--surface2);color:var(--ink3)} .st-esperando{background:var(--warn-soft);color:var(--warn)}
+.st-cortando{background:var(--ok-soft);color:var(--ok)} .st-atendido{background:var(--accent-soft);color:var(--accent)}
+.st-rechazado{background:var(--bad-soft);color:var(--bad)}
+.log{font-family:var(--f-mono);font-size:12px;max-height:340px;overflow:auto;padding:6px 0}
+.log div{padding:3px 16px;display:grid;grid-template-columns:42px 1fr;gap:8px;border-left:3px solid transparent}
+.log .t{color:var(--ink3)}
+.log .arr{border-color:var(--warn)} .log .cut{border-color:var(--ok)} .log .sleep{border-color:var(--sleep)}
+.log .rej{border-color:var(--bad);color:var(--bad)} .log .race{border-color:var(--bad);background:var(--bad-soft);color:var(--bad);font-weight:600}
+.log .done{border-color:var(--accent)} .log .sys{color:var(--ink2)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11.5px;color:var(--ink2)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+
+/* Casos */
+.cases{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.case{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--surface);display:grid;gap:8px;align-content:start}
+.case h4{margin:0;font-family:var(--f-display);font-weight:800;font-size:15px}
+.case p{margin:0;font-size:12.5px;color:var(--ink2)}
+.case .params{font-family:var(--f-mono);font-size:11.5px;color:var(--ink3)}
+.case .btns{margin-top:2px}
+.case.custom{border-style:dashed}
+
+/* Código y teoría */
+.code-tabs{display:flex;gap:6px;flex-wrap:wrap}
+pre{margin:0;background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow:auto;font-family:var(--f-mono);font-size:12.5px;line-height:1.55;max-height:620px}
+.kw{color:var(--pole-blue);font-weight:600}.cm{color:var(--ink3);font-style:italic}.fn{color:var(--pole-red)}.str{color:var(--ok)}
+.theory{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.card h3{margin:0 0 6px;font-family:var(--f-display);font-weight:800;font-size:17px;text-wrap:balance}
+.card .eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--pole-red)}
+.card p,.card li{font-size:13.5px;color:var(--ink2);max-width:65ch}
+.card ul{padding-left:18px;margin:6px 0 0}
+.card code{font-family:var(--f-mono);font-size:12px;background:var(--surface2);padding:1px 5px;border-radius:4px;color:var(--ink)}
+.lead{max-width:75ch;color:var(--ink2);margin:0 0 16px}
+h2.sec{font-family:var(--f-display);font-weight:900;font-size:26px;letter-spacing:-.02em;margin:0 0 6px;text-transform:uppercase}
+/* ── Pantalla de inicio */
+.welcome{min-height:100dvh;display:grid;align-content:center;padding-inline:20px;padding-block:28px 40px;
+  background:
+    repeating-linear-gradient(135deg,transparent 0 46px,color-mix(in srgb,var(--pole-red) 6%,transparent) 46px 52px,transparent 52px 98px,color-mix(in srgb,var(--pole-blue) 6%,transparent) 98px 104px),
+    var(--bg)}
+.w-in{max-width:1160px;margin:0 auto;width:100%;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:36px;align-items:start}
+@media (max-width:900px){.w-in{grid-template-columns:minmax(0,1fr);gap:22px}}
+.w-top{max-width:1160px;margin:0 auto 18px;width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.w-uni{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
+.w-hero{display:grid;grid-template-columns:auto minmax(0,1fr);gap:22px;align-items:start}
+.w-hero .pole{width:30px;height:190px;border-radius:15px;border-width:3px;background-size:100% 60px;
+  background-image:repeating-linear-gradient(135deg,var(--pole-red) 0 10px,var(--pole-white) 10px 20px,var(--pole-blue) 20px 30px,var(--pole-white) 30px 40px)}
+.w-hero .pole.spin{animation:poleBig 1.6s linear infinite}
+@keyframes poleBig{to{background-position:0 60px}}
+.w-eyebrow{font-family:var(--f-mono);font-size:12px;color:var(--pole-red);font-weight:600}
+.w-title{font-family:var(--f-display);font-weight:900;font-size:clamp(40px,7vw,78px);line-height:.92;letter-spacing:-.035em;text-transform:uppercase;margin:6px 0 14px;text-wrap:balance}
+.w-lead{font-size:16px;color:var(--ink2);max-width:52ch;margin:0 0 20px}
+.w-steps{display:grid;gap:10px;margin:0;padding:0;list-style:none;counter-reset:st}
+.w-steps li{display:grid;grid-template-columns:32px 1fr;gap:12px;align-items:start;counter-increment:st}
+.w-steps li::before{content:counter(st);width:32px;height:32px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-family:var(--f-display);font-weight:800}
+.w-steps b{display:block;font-family:var(--f-display);font-size:15px}
+.w-steps span{font-size:13px;color:var(--ink2)}
+.w-meta{margin-top:22px;font-size:12.5px;color:var(--ink2);display:grid;gap:2px}
+.w-meta b{color:var(--ink)}
+.w-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);display:grid}
+.w-card section{padding:16px 18px;border-bottom:1px solid var(--line)}
+.w-card section:last-child{border-bottom:0}
+.w-card h2{margin:0 0 8px;font-family:var(--f-display);font-weight:800;font-size:13px;letter-spacing:.07em;text-transform:uppercase}
+.pol-sum{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.pol-sum li{display:grid;grid-template-columns:22px 1fr;gap:8px;font-size:13px;color:var(--ink2)}
+.pol-sum li::before{content:"✓";color:var(--ok);font-weight:800}
+.pol-sum b{color:var(--ink)}
+.linkbtn{background:none;border:0;padding:0;color:var(--accent);font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.pol-full{max-height:300px;overflow:auto;margin-top:12px;border:1px solid var(--line);border-radius:10px;padding:4px 14px;background:var(--surface2)}
+.btn.big{padding:12px 16px;font-size:15px;width:100%}
+/* Documento de políticas */
+.policy{display:grid;gap:4px}
+.policy h3{font-family:var(--f-display);font-weight:800;font-size:17px;margin:14px 0 4px}
+.policy ol{margin:0;padding-left:20px;display:grid;gap:6px}
+.policy li{font-size:13.5px;color:var(--ink2);max-width:75ch}
+.policy li b{color:var(--ink)}
+.policy .upd{font-size:12px;color:var(--ink3);margin-top:10px}
+.pol-page{max-width:860px}
+.pol-page .panel-b{padding:6px 22px 20px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;z-index:50}
+@media (prefers-reduced-motion:reduce){.pole.spin,.zzz{animation:none}}
+</style>
+
+<div class="welcome" id="welcome">
+  <div class="w-top">
+    <span class="w-uni">Universidad Nacional del Altiplano · Ingeniería de Sistemas</span>
+    <button class="themebtn" type="button">◐ Tema</button>
+  </div>
+  <div class="w-in">
+    <div>
+      <div class="w-hero">
+        <div class="pole spin" aria-hidden="true"></div>
+        <div>
+          <div class="w-eyebrow">SIS 215 · Sistemas Operativos · Trabajo Encargado N.° 03</div>
+          <h1 class="w-title">Barbero Dormilón</h1>
+          <p class="w-lead">Simulador del problema de concurrencia con N barberos, N sillas y N clientes. Cada barbero y cada cliente es un hilo que se coordina con semáforos y un mutex.</p>
+          <ol class="w-steps">
+            <li><div><b>Elige un caso</b><span>Clásico, sala saturada, varias políticas o sin mutex. También puedes crear el tuyo.</span></div></li>
+            <li><div><b>Mira trabajar a los hilos</b><span>Barberos que duermen y despiertan, clientes que esperan o se van, y la memoria compartida en vivo.</span></div></li>
+            <li><div><b>Compara resultados</b><span>Espera promedio, inanición, uso de barberos y condición de carrera, caso por caso.</span></div></li>
+          </ol>
+          <div class="w-meta">
+            <span>Docente: <b>Ing. Donia Ruelas</b></span>
+            <span>Integrante: <b>Emerson Aldair Flores Flores</b></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="w-card">
+      <section>
+        <h2>Caso inicial</h2>
+        <select id="wCase" aria-label="Caso inicial"></select>
+        <p class="hint" id="wCaseDesc" style="margin:8px 0 0"></p>
+      </section>
+      <section>
+        <h2>Políticas de uso y privacidad</h2>
+        <ul class="pol-sum">
+          <li><span><b>Uso académico.</b> Herramienta educativa para estudiar y exponer concurrencia.</span></li>
+          <li><span><b>Clientes ficticios.</b> Todos los clientes los genera el programa; no son personas reales.</span></li>
+          <li><span><b>Sin datos personales.</b> No pedimos ni enviamos ningún dato tuyo; todo corre en tu navegador.</span></li>
+          <li><span><b>Ley N.° 29733.</b> El diseño respeta la Ley de Protección de Datos Personales del Perú.</span></li>
+        </ul>
+        <p style="margin:10px 0 0"><button class="linkbtn" type="button" id="wPolToggle" aria-expanded="false">Leer las políticas completas</button></p>
+        <div class="pol-full" id="wPolFull" hidden><div class="policy" data-policy></div></div>
+      </section>
+      <section>
+        <label class="check" style="margin-bottom:12px"><input type="checkbox" id="wAccept"><span>He leído y acepto las políticas de uso y privacidad.</span></label>
+        <button class="btn primary big" type="button" id="wEnter" disabled>Entrar al simulador →</button>
+      </section>
+    </div>
+  </div>
+</div>
+
+<div id="app" hidden>
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <div class="pole" id="brandPole" aria-hidden="true"></div>
+      <div>
+        <h1>Barbero Dormilón</h1>
+        <p>SIS 215 · Sistemas Operativos · Hilos, semáforos y exclusión mutua</p>
+      </div>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button class="tab" role="tab" data-view="sim" aria-selected="true">Simulador</button>
+      <button class="tab" role="tab" data-view="casos" aria-selected="false">Casos</button>
+      <button class="tab" role="tab" data-view="codigo" aria-selected="false">Código</button>
+      <button class="tab" role="tab" data-view="teoria" aria-selected="false">Teoría</button>
+      <button class="tab" role="tab" data-view="politicas" aria-selected="false">Políticas</button>
+    </nav>
+    <button class="themebtn" id="bHome" type="button" title="Volver a la pantalla de inicio">⌂ Inicio</button>
+    <button class="themebtn" id="themeBtn" type="button">◐ Tema</button>
+  </div>
+</header>
+
+<main class="wrap">
+<!-- ═════════════ SIMULADOR ═════════════ -->
+<section class="view" id="v-sim">
+  <div class="sim">
+    <aside class="panel cfg">
+      <div class="panel-h"><h2>Configuración</h2><span class="hint" id="cfgCase">Caso 1</span></div>
+      <form class="panel-b" id="cfgForm" autocomplete="off">
+        <div class="field"><label for="fCase">Caso</label><select id="fCase"></select></div>
+        <div class="sep" style="margin:4px 0 14px"></div>
+        <div class="row2">
+          <div class="field"><label for="fB">Barberos</label><input type="number" id="fB" min="1" max="12" value="1"></div>
+          <div class="field"><label for="fS">Sillas de espera</label><input type="number" id="fS" min="0" max="30" value="3"></div>
+        </div>
+        <div class="field"><label for="fN">Clientes (hilos)</label><input type="number" id="fN" min="1" max="300" value="12"></div>
+        <div class="row2">
+          <div class="field"><label for="fAmin">Llegada mín.</label><input type="number" id="fAmin" min="0" max="50" value="1"></div>
+          <div class="field"><label for="fAmax">Llegada máx.</label><input type="number" id="fAmax" min="0" max="50" value="4"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label for="fCmin">Corte mín.</label><input type="number" id="fCmin" min="1" max="50" value="3"></div>
+          <div class="field"><label for="fCmax">Corte máx.</label><input type="number" id="fCmax" min="1" max="50" value="6"></div>
+        </div>
+        <p class="hint" style="margin:-4px 0 12px">Tiempos en unidades (u). La llegada es el intervalo entre un cliente y el siguiente.</p>
+        <div class="field">
+          <label for="fPol">Política de atención</label>
+          <select id="fPol">
+            <option value="FIFO">FIFO · orden de llegada</option>
+            <option value="SJF">SJF · corte más corto primero</option>
+            <option value="PRIO">Prioridad (1 = alta)</option>
+          </select>
+        </div>
+        <label class="check"><input type="checkbox" id="fAging" checked><span>Envejecimiento<small>Cada 5 u de espera la prioridad sube un nivel (evita inanición).</small></span></label>
+        <label class="check"><input type="checkbox" id="fMutex" checked><span>Exclusión mutua (mutex)<small>Desactívalo para ver una condición de carrera sobre <span class="mono">esperando</span>.</small></span></label>
+        <div class="field"><label for="fSeed">Semilla aleatoria</label><input type="number" id="fSeed" min="1" max="99999" value="7"></div>
+        <div class="sep"></div>
+        <div class="field"><label for="fSpeed">Velocidad <output id="oSpeed">4 u/s</output></label><input type="range" id="fSpeed" min="1" max="20" value="4"></div>
+        <div class="btns">
+          <button class="btn primary grow" type="button" id="bPlay">▶ Iniciar</button>
+          <button class="btn" type="button" id="bStep" title="Avanzar una unidad de tiempo">Paso</button>
+          <button class="btn" type="button" id="bReset">Reiniciar</button>
+        </div>
+        <div class="btns" style="margin-top:8px">
+          <button class="btn grow" type="button" id="bEnd">Ejecutar hasta el final</button>
+          <button class="btn grow" type="button" id="bSave">＋ Guardar caso</button>
+        </div>
+      </form>
+    </aside>
+
+    <div class="main">
+      <div class="panel">
+        <div class="panel-b statusbar">
+          <div class="clock mono" id="clock">t = 0<small>u</small></div>
+          <span class="pill p-pause" id="runState">Listo</span>
+          <span class="casename" id="caseName"></span>
+        </div>
+        <div class="panel-b" style="border-top:1px solid var(--line)">
+          <div class="shop">
+            <div style="display:grid;gap:16px;min-width:0">
+              <div>
+                <p class="zone-t">Sillas de barbero · hilos barbero</p>
+                <div class="barbers" id="barbers"></div>
+              </div>
+              <div>
+                <p class="zone-t">Sala de espera</p>
+                <div class="room"><div class="room-sign" id="chairsLbl"></div><div class="chairs" id="chairs"></div></div>
+              </div>
+            </div>
+            <div class="door">
+              <p class="zone-t" style="margin:0">Puerta</p>
+              <div class="dstat"><b id="dArr">0</b><span>han llegado</span></div>
+              <div class="dstat"><b id="dSrv" style="color:var(--ok)">0</b><span>atendidos</span></div>
+              <div class="dstat"><b id="dRej" style="color:var(--bad)">0</b><span>se fueron (sala llena)</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-h"><h3>Memoria compartida</h3><span class="hint">Solo se toca dentro de la sección crítica</span></div>
+        <div class="panel-b shared" id="shared"></div>
+      </div>
+
+      <div class="stats" id="stats"></div>
+
+      <div class="panel">
+        <div class="panel-h"><h3>Diagrama de Gantt por barbero</h3>
+          <div class="legend"><span><i style="background:var(--pole-blue)"></i>Prioridad 1</span><span><i style="background:var(--sleep)"></i>Prioridad 2</span><span><i style="background:var(--ok)"></i>Prioridad 3</span><span><i style="background:var(--bad)"></i>Rechazo</span></div>
+        </div>
+        <div class="panel-b gantt-wrap" id="gantt"></div>
+      </div>
+
+      <div class="two">
+        <div class="panel">
+          <div class="panel-h"><h3>Hilos cliente</h3><span class="hint">Datos privados de cada hilo (su pila)</span></div>
+          <div class="tbl-wrap"><table>
+            <thead><tr><th>Hilo</th><th>Llega</th><th>Corte</th><th>Prio.</th><th>Estado</th><th>Barbero</th><th>Espera</th></tr></thead>
+            <tbody id="threads"></tbody>
+          </table></div>
+        </div>
+        <div class="panel">
+          <div class="panel-h"><h3>Bitácora de eventos</h3><span class="hint" id="logCount"></span></div>
+          <div class="log" id="log"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-h"><h3>Historial de ejecuciones</h3><button class="btn" type="button" id="bClearHist">Limpiar</button></div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>#</th><th>Caso</th><th>B</th><th>Sillas</th><th>N</th><th>Política</th><th>Mutex</th><th>Atendidos</th><th>Rechazados</th><th>Espera prom.</th><th>Espera máx.</th><th>Uso barberos</th><th>Inconsist.</th><th>T total</th></tr></thead>
+          <tbody id="hist"></tbody>
+        </table></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ CASOS ═════════════ -->
+<section class="view" id="v-casos" hidden>
+  <h2 class="sec">Casos de prueba</h2>
+  <p class="lead">Cada caso es una configuración distinta del problema. Cárgalo en el simulador para verlo paso a paso, o ejecuta todos en lote y compara los resultados. Puedes añadir los tuyos con “Guardar caso” desde el simulador.</p>
+  <div class="btns" style="margin-bottom:14px">
+    <button class="btn primary" type="button" id="bBatch">Ejecutar todos los casos</button>
+  </div>
+  <div class="cases" id="cases"></div>
+  <div class="panel" style="margin-top:18px">
+    <div class="panel-h"><h3>Comparación en lote</h3><span class="hint">Resultado de ejecutar cada caso completo</span></div>
+    <div class="tbl-wrap" style="max-height:none"><table>
+      <thead><tr><th>Caso</th><th>B</th><th>Sillas</th><th>N</th><th>Política</th><th>Mutex</th><th>Atendidos</th><th>Rechazados</th><th>Espera prom.</th><th>Espera máx.</th><th>Uso barberos</th><th>Inconsist.</th><th>T total</th></tr></thead>
+      <tbody id="batch"><tr><td colspan="13" class="hint">Pulsa “Ejecutar todos los casos”.</td></tr></tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- ═════════════ CÓDIGO ═════════════ -->
+<section class="view" id="v-codigo" hidden>
+  <h2 class="sec">Solución en código</h2>
+  <p class="lead">La misma lógica del simulador escrita con hilos reales. Dos semáforos (<span class="mono">clientes</span>, <span class="mono">barberos</span>) y un mutex que protege el contador <span class="mono">esperando</span>. Funciona para cualquier número de barberos, sillas y clientes.</p>
+  <div class="panel">
+    <div class="panel-h">
+      <div class="code-tabs">
+        <button class="btn primary" type="button" data-code="c">C · pthreads</button>
+        <button class="btn" type="button" data-code="py">Python · threading</button>
+        <button class="btn" type="button" data-code="pseudo">Pseudocódigo</button>
+      </div>
+      <button class="btn" type="button" id="bCopy">Copiar código</button>
+    </div>
+    <div class="panel-b">
+      <p class="hint mono" id="codeRun" style="margin:0 0 10px"></p>
+      <pre id="codeBox"></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ TEORÍA ═════════════ -->
+<section class="view" id="v-politicas" hidden>
+  <h2 class="sec">Políticas de uso y privacidad</h2>
+  <p class="lead">Reglas de uso del simulador y cómo trata la información. Se aceptan en la pantalla de inicio.</p>
+  <div class="panel pol-page"><div class="panel-b"><div class="policy" data-policy></div></div></div>
+</section>
+
+<section class="view" id="v-teoria" hidden>
+  <h2 class="sec">El problema</h2>
+  <p class="lead">Una barbería tiene <b>B</b> barberos, <b>B</b> sillas de corte y <b>S</b> sillas de espera. Si no hay clientes, el barbero se duerme. Cuando llega un cliente, despierta a un barbero; si todos están ocupados, se sienta a esperar, y si la sala está llena, se va. El reto es coordinar los hilos para que nadie se quede bloqueado para siempre y que el contador de clientes no se corrompa. Problema planteado por Dijkstra (1965).</p>
+  <div class="theory">
+    <div class="card">
+      <span class="eyebrow">Hilos</span>
+      <h3>Quién es un hilo aquí</h3>
+      <p>La barbería es <b>un proceso</b>. Cada barbero y cada cliente es <b>un hilo</b> dentro de ese proceso. Todos comparten la memoria del proceso (la sala de espera y el contador), pero cada hilo tiene su propia pila y registros: su id, la duración de su corte y su prioridad.</p>
+      <p>El S.O. planifica los hilos, no la barbería entera; por eso dos clientes pueden “llegar a la vez”.</p>
+    </div>
+    <div class="card">
+      <span class="eyebrow">Sincronización</span>
+      <h3>Semáforos y mutex</h3>
+      <ul>
+        <li><code>clientes = 0</code> cuenta clientes esperando. El barbero hace <code>wait(clientes)</code>: si vale 0, se duerme.</li>
+        <li><code>barberos = 0</code> cuenta barberos listos. El cliente hace <code>wait(barberos)</code> hasta que lo llamen.</li>
+        <li><code>mutex = 1</code> asegura que solo un hilo modifique <code>esperando</code> a la vez.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="eyebrow">Sección crítica</span>
+      <h3>Lo que va dentro del mutex</h3>
+      <p>Leer <code>esperando</code>, compararlo con el número de sillas e incrementarlo (cliente), o decrementarlo (barbero). Es una secuencia leer–modificar–escribir: si dos hilos la ejecutan intercalada, uno pisa el valor del otro.</p>
+    </div>
+    <div class="card">
+      <span class="eyebrow">Condición de carrera</span>
+      <h3>Qué pasa sin mutex</h3>
+      <p>Desactiva el mutex y carga el caso “Sin mutex”. Cuando dos clientes llegan en la misma unidad de tiempo, ambos leen el mismo valor de <code>esperando</code> y escriben valor+1: se pierde una actualización. El contador deja de coincidir con la sala real, entran más clientes que sillas (aparecen “de pie”) o se rechaza a alguien habiendo sitio.</p>
+    </div>
+    <div class="card">
+      <span class="eyebrow">Interbloqueo</span>
+      <h3>Por qué esta solución no se bloquea</h3>
+      <p>Ningún hilo retiene el mutex mientras espera otro semáforo: el cliente hace <code>signal(mutex)</code> antes de <code>wait(barberos)</code>, y el barbero libera el mutex antes de cortar. Se rompe la condición de “retener y esperar”, así que no hay ciclo de espera.</p>
+    </div>
+    <div class="card">
+      <span class="eyebrow">Inanición</span>
+      <h3>Clientes que nunca son atendidos</h3>
+      <p>Con FIFO nadie se queda esperando para siempre. Con SJF o prioridad, un cliente de corte largo o prioridad baja puede ser adelantado una y otra vez mientras sigan llegando otros. El envejecimiento sube su prioridad según el tiempo que espera, y lo corrige. Compara la “espera máxima” entre políticas.</p>
+    </div>
+    <div class="card">
+      <span class="eyebrow">Políticas</span>
+      <h3>Políticas de atención = planificación</h3>
+      <p>Elegir a qué cliente atiende el barbero que se libera es el mismo problema que elegir qué proceso usa la CPU:</p>
+      <ul><li><b>FIFO</b>: justo, sin inanición, espera promedio mayor.</li><li><b>SJF</b>: minimiza la espera promedio, riesgo de inanición.</li><li><b>Prioridad</b>: atiende primero lo urgente; necesita envejecimiento.</li></ul>
+    </div>
+    <div class="card">
+      <span class="eyebrow">Privacidad</span>
+      <h3>Datos privados y datos compartidos</h3>
+      <p>Lo privado de cada hilo (su pila) nadie más lo lee ni lo escribe. Lo compartido (la cola y el contador) solo se toca dentro de la sección crítica. Así el S.O. aísla a los hilos: un hilo no puede ver ni alterar el estado de otro fuera del protocolo de sincronización.</p>
+      <p>Si la barbería fuera un sistema real que registra clientes (nombre, teléfono, historial), en Perú esos datos estarían protegidos por la <b>Ley N.° 29733, Ley de Protección de Datos Personales</b>, y su reglamento: consentimiento informado, uso solo para la finalidad declarada y medidas de seguridad sobre la base de datos.</p>
+    </div>
+    <div class="card">
+      <span class="eyebrow">Métricas</span>
+      <h3>Cómo leer los resultados</h3>
+      <ul>
+        <li><b>Espera</b> = inicio del corte − llegada.</li>
+        <li><b>Uso de barberos</b> = tiempo cortando ÷ (B × tiempo total).</li>
+        <li><b>Inconsistencias</b> = veces que <code>esperando</code> ≠ clientes reales en la sala.</li>
+      </ul>
+      <p class="hint">Bibliografía: Silberschatz, Galvin y Gagne, <i>Operating System Concepts</i>, 10.ª ed., 2018. Tanenbaum y Bos, <i>Modern Operating Systems</i>, 4.ª ed., 2015.</p>
+    </div>
+  </div>
+</section>
+</main>
+</div>
+
+<script>
+/* ═════════════════════ Tema ═════════════════════ */
+const root=document.documentElement;
+function curTheme(){const a=root.getAttribute('data-theme');if(a)return a;return matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}
+function paintThemeBtn(){document.querySelectorAll('.themebtn:not(#bHome)').forEach(b=>b.textContent=curTheme()==='dark'?'☀ Claro':'☾ Oscuro');}
+const toggleTheme=()=>{const n=curTheme()==='dark'?'light':'dark';root.setAttribute('data-theme',n);try{localStorage.setItem('barbero-theme',n)}catch(e){}paintThemeBtn();renderGantt();};
+document.querySelectorAll('.themebtn:not(#bHome)').forEach(b=>b.onclick=toggleTheme);
+try{const t=localStorage.getItem('barbero-theme');if(t)root.setAttribute('data-theme',t);}catch(e){}
+paintThemeBtn();
+
+/* ═════════════════════ Pestañas ═════════════════════ */
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x===b));
+  document.querySelectorAll('.view').forEach(v=>v.hidden=v.id!=='v-'+b.dataset.view);
+});
+
+/* ═════════════════════ Casos ═════════════════════ */
+const CASES=[
+ {name:'Caso clásico',desc:'Un barbero, tres sillas. El planteamiento original de Dijkstra.',B:1,S:3,N:12,aMin:1,aMax:4,cMin:3,cMax:6,pol:'FIFO',aging:true,mutex:true,seed:7},
+ {name:'Sala saturada',desc:'Los clientes llegan más rápido de lo que se corta: muchos se van.',B:1,S:2,N:20,aMin:0,aMax:2,cMin:4,cMax:7,pol:'FIFO',aging:true,mutex:true,seed:11},
+ {name:'Barbería grande',desc:'Tres barberos y cinco sillas atendiendo 30 hilos cliente.',B:3,S:5,N:30,aMin:0,aMax:3,cMin:4,cMax:9,pol:'FIFO',aging:true,mutex:true,seed:21},
+ {name:'Barberos ociosos',desc:'Llegadas espaciadas: los barberos pasan la mayor parte del tiempo dormidos.',B:2,S:4,N:10,aMin:5,aMax:9,cMin:2,cMax:4,pol:'FIFO',aging:true,mutex:true,seed:5},
+ {name:'Sin sillas de espera',desc:'S = 0: solo entra quien encuentra un barbero dormido.',B:2,S:0,N:15,aMin:0,aMax:3,cMin:3,cMax:6,pol:'FIFO',aging:true,mutex:true,seed:3},
+ {name:'SJF',desc:'Corte más corto primero. Baja la espera promedio, pero sube la máxima.',B:1,S:8,N:25,aMin:0,aMax:3,cMin:2,cMax:10,pol:'SJF',aging:false,mutex:true,seed:13},
+ {name:'Prioridad sin envejecimiento',desc:'Los clientes de prioridad 3 pueden quedar relegados mucho tiempo (inanición).',B:1,S:8,N:25,aMin:0,aMax:3,cMin:2,cMax:6,pol:'PRIO',aging:false,mutex:true,seed:17},
+ {name:'Prioridad con envejecimiento',desc:'Misma carga que el anterior, pero la espera sube la prioridad.',B:1,S:8,N:25,aMin:0,aMax:3,cMin:2,cMax:6,pol:'PRIO',aging:true,mutex:true,seed:17},
+ {name:'Sin mutex',desc:'Condición de carrera: el contador esperando se corrompe.',B:2,S:3,N:25,aMin:0,aMax:1,cMin:3,cMax:6,pol:'FIFO',aging:true,mutex:false,seed:9},
+];
+let customN=0;
+
+/* ═════════════════════ Motor de simulación ═════════════════════ */
+function rng(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const AGING_STEP=5;
+
+function createSim(cfg){
+  const r=rng(cfg.seed), ri=(a,b)=>a+Math.floor(r()*(b-a+1));
+  const clients=[];let t=0;
+  for(let i=0;i<cfg.N;i++){ if(i>0)t+=ri(cfg.aMin,cfg.aMax); clients.push({id:i+1,arr:t,dur:ri(cfg.cMin,cfg.cMax),prio:ri(1,3),state:'nuevo',start:null,end:null,barber:null}); }
+  const s={cfg,t:0,clients,barbers:[],queue:[],esperando:0,sem:{clientes:0,barberos:0,mutex:1},segs:[],rejects:[],log:[],races:0,lastDiff:0,done:false,served:0,rejected:0,arrived:0,busy:0};
+  for(let i=0;i<cfg.B;i++) s.barbers.push({id:i+1,state:'dormido',client:null,rem:0,cuts:0});
+  s.log.push({t:0,type:'sys',msg:`Inicio: ${cfg.B} hilo(s) barbero, ${cfg.S} silla(s), ${cfg.N} hilo(s) cliente. Política ${cfg.pol}.`});
+  s.barbers.forEach(b=>s.log.push({t:0,type:'sleep',msg:`B${b.id}: wait(clientes) con clientes=0 → se duerme`}));
+  return s;
+}
+function effPrio(s,c){ if(!s.cfg.aging) return c.prio; return Math.max(1,c.prio-Math.floor((s.t-c.wait0)/AGING_STEP)); }
+function pickIndex(s){
+  const q=s.queue; if(s.cfg.pol==='FIFO') return 0;
+  let best=0;
+  for(let i=1;i<q.length;i++){
+    const a=s.clients[q[i]-1], b=s.clients[q[best]-1];
+    if(s.cfg.pol==='SJF'){ if(a.dur<b.dur) best=i; }
+    else { if(effPrio(s,a)<effPrio(s,b)) best=i; }
+  }
+  return best;
+}
+function step(s){
+  if(s.done) return;
+  const t=s.t, cfg=s.cfg, L=(type,msg)=>s.log.push({t,type,msg});
+  // 1) Barberos que terminan su corte
+  for(const b of s.barbers){
+    if(b.state!=='cortando') continue;
+    b.rem--; s.busy++;
+    if(b.rem<=0){ const c=s.clients[b.client-1]; c.state='atendido'; c.end=t; s.served++; b.cuts++;
+      L('done',`B${b.id} termina el corte de C${c.id}; el hilo C${c.id} finaliza`); b.state='libre'; b.client=null; }
+  }
+  const snap=s.esperando; let write=null;
+  // Barberos libres toman al siguiente cliente o se duermen
+  const take=()=>{
+  for(const b of s.barbers){
+    if(b.state==='cortando') continue;
+    if(s.queue.length>0){
+      const idx=pickIndex(s), cid=s.queue.splice(idx,1)[0], c=s.clients[cid-1];
+      s.sem.clientes--;
+      const seen=cfg.mutex?s.esperando:snap;
+      if(cfg.mutex) s.esperando--; else write=seen-1;
+      const wasSleep=b.state==='dormido';
+      c.state='cortando'; c.start=t; c.barber=b.id;
+      b.state='cortando'; b.client=cid; b.rem=c.dur;
+      s.segs.push({b:b.id,c:cid,start:t,end:t+c.dur,prio:c.prio});
+      L('cut',`B${b.id}${wasSleep?' despierta':''}: wait(clientes) ✓ · esperando=${seen}→${seen-1} · signal(barberos) → corta a C${cid} (esperó ${t-c.arr}u)`);
+    } else if(b.state!=='dormido'){
+      b.state='dormido'; L('sleep',`B${b.id}: wait(clientes) con clientes=0 → se duerme`);
+    }
+  }
+  };
+  take();                       // 2) atienden a quien ya esperaba
+  // 3) Llegan hilos cliente
+  for(const c of s.clients){
+    if(c.arr!==t) continue;
+    s.arrived++;
+    const seen=cfg.mutex?s.esperando:snap;
+    const freeB=s.barbers.filter(b=>b.state!=='cortando').length-s.queue.length;
+    if(seen<cfg.S || (cfg.S===0 && freeB>0)){
+      if(cfg.mutex) s.esperando++; else write=seen+1;
+      c.state='esperando'; c.wait0=t; s.queue.push(c.id); s.sem.clientes++;
+      const sl=s.barbers.find(b=>b.state==='dormido');
+      L('arr',`C${c.id} llega (corte ${c.dur}u, prio ${c.prio}) · ${cfg.mutex?'wait(mutex) · ':''}esperando=${seen}→${seen+1} · signal(clientes)${sl?` → despierta a B${sl.id}`:''}`);
+    } else {
+      c.state='rechazado'; c.end=t; s.rejected++; s.rejects.push({t,c:c.id});
+      L('rej',`C${c.id} llega y ve esperando=${seen} ≥ ${cfg.S} sillas → signal(mutex) y se va`);
+    }
+  }
+  take();                       // 4) despiertan por los recién llegados
+  if(!cfg.mutex && write!==null) s.esperando=write;
+  s.sem.barberos=s.barbers.filter(b=>b.state==='dormido').length;
+  const diff=s.esperando-s.queue.length;
+  if(diff!==s.lastDiff){ s.races++; L('race',`¡Condición de carrera! esperando=${s.esperando} pero hay ${s.queue.length} cliente(s) en la sala`); s.lastDiff=diff; }
+  // fin
+  const pending=s.clients.some(c=>c.state==='nuevo'||c.state==='esperando'||c.state==='cortando');
+  if(!pending){ s.done=true; L('sys',`Fin de la jornada en t=${t}. Atendidos ${s.served}, se fueron ${s.rejected}.`); }
+  else s.t++;
+}
+function metrics(s){
+  const srv=s.clients.filter(c=>c.start!==null), waits=srv.map(c=>c.start-c.arr);
+  const T=Math.max(1,s.t);
+  return {served:s.served,rejected:s.rejected,
+    avg:waits.length?waits.reduce((a,b)=>a+b,0)/waits.length:0,
+    max:waits.length?Math.max(...waits):0,
+    util:s.busy/(s.cfg.B*T)*100, races:s.races, T:s.t,
+    turn:srv.filter(c=>c.end!==null).length?srv.filter(c=>c.end!==null).reduce((a,c)=>a+c.end-c.arr,0)/srv.filter(c=>c.end!==null).length:0};
+}
+function runToEnd(cfg){const s=createSim(cfg);let g=0;while(!s.done&&g++<200000)step(s);return s;}
+
+/* ═════════════════════ Estado de la interfaz ═════════════════════ */
+const $=id=>document.getElementById(id);
+let SIM=null, timer=null, currentName='Caso clásico', recorded=false;
+const HIST=[];
+
+function readCfg(){
+  const n=(id,def,min,max)=>{let v=parseInt($(id).value,10);if(isNaN(v))v=def;return Math.min(max,Math.max(min,v));};
+  let aMin=n('fAmin',1,0,50),aMax=n('fAmax',4,0,50),cMin=n('fCmin',3,1,50),cMax=n('fCmax',6,1,50);
+  if(aMax<aMin)[aMin,aMax]=[aMax,aMin]; if(cMax<cMin)[cMin,cMax]=[cMax,cMin];
+  return {B:n('fB',1,1,12),S:n('fS',3,0,30),N:n('fN',12,1,300),aMin,aMax,cMin,cMax,pol:$('fPol').value,aging:$('fAging').checked,mutex:$('fMutex').checked,seed:n('fSeed',7,1,99999)};
+}
+function writeCfg(c){
+  $('fB').value=c.B;$('fS').value=c.S;$('fN').value=c.N;$('fAmin').value=c.aMin;$('fAmax').value=c.aMax;
+  $('fCmin').value=c.cMin;$('fCmax').value=c.cMax;$('fPol').value=c.pol;$('fAging').checked=c.aging;$('fMutex').checked=c.mutex;$('fSeed').value=c.seed;
+}
+function reset(name){
+  stop(); if(name) currentName=name;
+  SIM=createSim(readCfg()); recorded=false; PREVQ=new Set(); render();
+}
+function play(){
+  if(!SIM||SIM.done) reset();
+  if(timer){stop();return;}
+  const sp=+$('fSpeed').value;
+  timer=setInterval(()=>{step(SIM);render();if(SIM.done)stop();},1000/sp);
+  render();
+}
+function stop(){ if(timer){clearInterval(timer);timer=null;} render&&SIM&&render(); }
+$('bPlay').onclick=play;
+$('bStep').onclick=()=>{stop();if(SIM.done)reset();step(SIM);render();};
+$('bReset').onclick=()=>reset();
+$('bEnd').onclick=()=>{stop();let g=0;while(!SIM.done&&g++<200000)step(SIM);render();};
+$('fSpeed').oninput=()=>{$('oSpeed').textContent=$('fSpeed').value+' u/s';if(timer){stop();play();}};
+$('cfgForm').addEventListener('change',e=>{
+  if(e.target.id==='fSpeed') return;
+  if(e.target.id==='fCase'){ if(e.target.value!=='') loadCase(+e.target.value); return; }
+  currentName='Personalizado'; $('fCase').value=''; reset();
+});
+$('cfgForm').addEventListener('submit',e=>e.preventDefault());
+$('bSave').onclick=()=>{const c=readCfg();customN++;CASES.push({...c,name:`Mi caso ${customN}`,desc:'Configuración guardada desde el simulador.',custom:true});renderCases();currentName=`Mi caso ${customN}`;fillCaseSelects();$('fCase').value=String(CASES.length-1);render();toast(`Guardado como “Mi caso ${customN}” en la pestaña Casos`);};
+$('bClearHist').onclick=()=>{HIST.length=0;renderHist();};
+
+function toast(msg){const d=document.createElement('div');d.className='toast';d.textContent=msg;document.body.appendChild(d);setTimeout(()=>d.remove(),2200);}
+
+/* ═════════════════════ Render ═════════════════════ */
+const esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+const PCOL=['var(--pole-blue)','var(--sleep)','var(--ok)'];
+const POLN={FIFO:'FIFO',SJF:'SJF',PRIO:'Prioridad'};
+let PREVQ=new Set();
+/* Silla de espera vista de frente; si hay color, dibuja al cliente sentado */
+const PERSON_HEAD=(cy)=>`<circle class="p-head" cx="31" cy="${cy}" r="8"/><path d="M23 ${cy-1}a8 8 0 0 1 16 0c-4-3.5-12-3.5-16 0z" fill="#2b2118"/>`;
+function SVG_CHAIR(col){
+  const chair=`<line class="c-leg" x1="15" y1="50" x2="12" y2="70"/><line class="c-leg" x1="47" y1="50" x2="50" y2="70"/>
+    <rect class="c-back" x="13" y="6" width="36" height="40" rx="9"/><rect class="c-stitch" x="17.5" y="10.5" width="27" height="31" rx="6"/>
+    <rect class="c-arm" x="5" y="30" width="7" height="17" rx="3"/><rect class="c-arm" x="50" y="30" width="7" height="17" rx="3"/>
+    <rect class="c-seat" x="9" y="42" width="44" height="10" rx="4"/>`;
+  const who=col?`<g class="who">${PERSON_HEAD(16)}<rect x="20" y="25" width="22" height="24" rx="9" fill="${col}"/>
+    <rect class="p-legs" x="21" y="46" width="9" height="19" rx="3"/><rect class="p-legs" x="32" y="46" width="9" height="19" rx="3"/>
+    <rect x="18.5" y="63" width="12" height="5" rx="2" fill="#23262f"/><rect x="31.5" y="63" width="12" height="5" rx="2" fill="#23262f"/></g>`:'';
+  return `<svg viewBox="0 0 62 72" aria-hidden="true">${chair}${who}</svg>`;
+}
+function SVG_STAND(col){
+  return `<svg viewBox="0 0 62 72" aria-hidden="true"><g class="who">${PERSON_HEAD(10)}<rect x="21" y="19" width="20" height="27" rx="8" fill="${col}"/>
+    <rect x="15" y="21" width="6" height="20" rx="3" fill="${col}"/><rect x="41" y="21" width="6" height="20" rx="3" fill="${col}"/>
+    <rect class="p-legs" x="22" y="44" width="8" height="21" rx="3"/><rect class="p-legs" x="32" y="44" width="8" height="21" rx="3"/>
+    <rect x="20" y="64" width="11" height="5" rx="2" fill="#23262f"/><rect x="31" y="64" width="11" height="5" rx="2" fill="#23262f"/></g>
+    <text x="53" y="14" font-family="IBM Plex Mono,monospace" font-weight="700" font-size="14" fill="var(--bad)">!</text></svg>`;
+}
+
+function render(){
+  const s=SIM, cfg=s.cfg;
+  $('clock').innerHTML=`t = ${s.t}<small>u</small>`;
+  const rs=$('runState');
+  if(s.done){rs.className='pill p-done';rs.textContent='Terminado';}
+  else if(timer){rs.className='pill p-run';rs.textContent='En ejecución';}
+  else {rs.className='pill p-pause';rs.textContent=s.t===0?'Listo':'En pausa';}
+  $('bPlay').textContent=timer?'❚❚ Pausar':(s.done?'↻ Repetir':(s.t===0?'▶ Iniciar':'▶ Continuar'));
+  $('caseName').textContent=`${currentName} · ${POLN[cfg.pol]}${cfg.mutex?'':' · sin mutex'}`;
+  $('cfgCase').textContent=currentName;
+  $('brandPole').classList.toggle('spin',s.barbers.some(b=>b.state==='cortando'));
+
+  // barberos
+  $('barbers').innerHTML=s.barbers.map(b=>{
+    const c=b.client?s.clients[b.client-1]:null;
+    const pct=c?Math.round((c.dur-b.rem)/c.dur*100):0;
+    const label=b.state==='cortando'?`Cortando a C${c.id}`:b.state==='dormido'?'Dormido <span class="zzz">z z z</span>':'Libre';
+    return `<div class="barber ${b.state}">
+      <div class="pole ${b.state==='cortando'?'spin':''}" aria-hidden="true"></div>
+      <div style="min-width:0">
+        <div class="b-name">Barbero ${b.id}</div>
+        <div class="b-state ${b.state}">${label}</div>
+        ${c?`<div class="prog"><i style="width:${pct}%"></i></div><div class="b-meta">${c.dur-b.rem}/${c.dur}u · prio ${c.prio}</div>`:`<div class="b-meta">${b.cuts} corte(s) hechos</div>`}
+      </div></div>`;
+  }).join('');
+
+  // sillas
+  const slots=Math.max(cfg.S,s.queue.length);
+  let h='';
+  for(let i=0;i<slots;i++){
+    const cid=s.queue[i];
+    if(cid){
+      const c=s.clients[cid-1], st=i>=cfg.S, w=s.t-c.arr;
+      const p=cfg.aging&&cfg.pol==='PRIO'?effPrio(s,c):c.prio;
+      const isNew=!PREVQ.has(cid);
+      h+=`<div class="seat ${st?'standing':'full'} ${isNew?'new':''}" title="C${c.id} · llegó en t=${c.arr} · corte ${c.dur}u · prioridad ${p}${st?' · de pie: entró por la condición de carrera':''}">
+        ${st?SVG_STAND(PCOL[p-1]):SVG_CHAIR(PCOL[p-1])}
+        <span class="badge" style="background:${PCOL[p-1]}">P${p}</span>${w>=10?'<span class="long" title="Lleva mucho esperando">⏳</span>':''}
+        <span class="tag">C${c.id}</span><span class="sub">${st?'de pie':`${w}u · ${c.dur}u`}</span></div>`;
+    } else h+=`<div class="seat empty" title="Silla libre">${SVG_CHAIR(null)}<span class="tag">libre</span><span class="sub"></span></div>`;
+  }
+  if(cfg.S===0&&!s.queue.length) h='<div class="empty-room">Sin sillas de espera: solo entra quien encuentra un barbero libre.</div>';
+  PREVQ=new Set(s.queue);
+  $('chairs').innerHTML=h;
+  $('chairsLbl').innerHTML=`🪑 <b>${Math.min(s.queue.length,cfg.S)}/${cfg.S}</b> ocupadas${s.queue.length>cfg.S?` · <b style="color:var(--bad)">${s.queue.length-cfg.S} de pie</b>`:''} · debajo: espera · corte`;
+  $('dArr').textContent=s.arrived;$('dSrv').textContent=s.served;$('dRej').textContent=s.rejected;
+
+  // memoria compartida
+  const incons=s.esperando!==s.queue.length;
+  $('shared').innerHTML=[
+    ['esperando',s.esperando,'variable compartida',incons],
+    ['sala real',s.queue.length,'clientes sentados',false],
+    ['sem clientes',s.sem.clientes,'clientes por atender',false],
+    ['sem barberos',s.sem.barberos,'barberos dormidos',false],
+    ['mutex',cfg.mutex?1:'—',cfg.mutex?'libre al cerrar cada u':'desactivado',!cfg.mutex],
+  ].map(([k,v,d,a])=>`<div class="sem ${a?'alert':''}"><div class="k">${k}</div><div class="v">${v}</div><div class="d">${d}</div></div>`).join('');
+
+  // estadísticas
+  const m=metrics(s);
+  $('stats').innerHTML=[
+    ['Atendidos',m.served],['Rechazados',m.rejected],['Espera prom.',m.avg.toFixed(2)+' u'],['Espera máx.',m.max+' u'],
+    ['Retorno prom.',m.turn.toFixed(2)+' u'],['Uso barberos',m.util.toFixed(1)+' %'],['Inconsistencias',m.races]
+  ].map(([k,v])=>`<div class="stat"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
+
+  // hilos
+  $('threads').innerHTML=s.clients.map(c=>{
+    const w=c.start!==null?c.start-c.arr:(c.state==='esperando'?s.t-c.arr:'');
+    return `<tr><td class="mono">C${c.id}</td><td class="mono">${c.arr}</td><td class="mono">${c.dur}u</td><td class="mono">${c.prio}</td><td><span class="st st-${c.state}">${c.state}</span></td><td class="mono">${c.barber?'B'+c.barber:'—'}</td><td class="mono">${w===''?'—':w+'u'}</td></tr>`;
+  }).join('');
+
+  // bitácora
+  const lg=$('log'), atBottom=lg.scrollHeight-lg.scrollTop-lg.clientHeight<30;
+  $('log').innerHTML=s.log.slice(-400).map(e=>`<div class="${e.type}"><span class="t">${e.t}</span><span>${esc(e.msg)}</span></div>`).join('');
+  if(atBottom||timer) lg.scrollTop=lg.scrollHeight;
+  $('logCount').textContent=`${s.log.length} eventos`;
+
+  renderGantt();
+  if(s.done&&!recorded){recorded=true;HIST.push({name:currentName,cfg:{...cfg},m:metrics(s)});renderHist();}
+}
+
+function renderGantt(){
+  if(!SIM) return; const s=SIM, cfg=s.cfg;
+  const T=Math.max(s.t+1, s.segs.reduce((a,g)=>Math.max(a,g.end),0)+1, 20);
+  const box=$('gantt'), avail=Math.max(300,box.clientWidth-32);
+  const L=54, px=Math.max(10,Math.min(28,(avail-L)/T)), rowH=26, top=6;
+  const rows=cfg.B+1, W=L+T*px+10, H=top+rows*rowH+24;
+  let g=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Diagrama de Gantt">`;
+  const step=T>120?20:T>60?10:5;
+  for(let x=0;x<=T;x+=step){const X=L+x*px;g+=`<line class="g-grid" x1="${X}" y1="${top}" x2="${X}" y2="${top+rows*rowH}"/><text class="g-tick" x="${X}" y="${H-8}" text-anchor="middle">${x}</text>`;}
+  for(let i=0;i<cfg.B;i++){const y=top+i*rowH;g+=`<text class="g-lbl" x="4" y="${y+rowH/2+4}">B${i+1}</text>`;}
+  const yd=top+cfg.B*rowH; g+=`<text class="g-lbl" x="4" y="${yd+rowH/2+4}">Puerta</text>`;
+  for(const sg of s.segs){
+    const y=top+(sg.b-1)*rowH+4, x=L+sg.start*px, end=Math.min(sg.end,s.done?sg.end:Math.max(s.t,sg.start)), w=Math.max(2,(Math.max(end,sg.start+0.15)-sg.start)*px);
+    g+=`<rect x="${x}" y="${y}" width="${w}" height="${rowH-8}" rx="3" fill="${PCOL[sg.prio-1]}"><title>C${sg.c}: ${sg.start}→${sg.end}</title></rect>`;
+    if(w>22) g+=`<text class="g-bar-t" x="${x+4}" y="${y+rowH/2}">C${sg.c}</text>`;
+  }
+  for(const r of s.rejects){const x=L+r.t*px+px/2,y=yd+rowH/2;g+=`<path d="M${x-4} ${y-4}L${x+4} ${y+4}M${x+4} ${y-4}L${x-4} ${y+4}" stroke="var(--bad)" stroke-width="2" fill="none"><title>C${r.c} se fue en t=${r.t}</title></path>`;}
+  const nx=L+s.t*px; g+=`<line class="g-now" x1="${nx}" y1="${top-4}" x2="${nx}" y2="${top+rows*rowH}"/>`;
+  g+='</svg>'; box.innerHTML=g;
+}
+window.addEventListener('resize',()=>renderGantt());
+
+function histRow(r,i){const c=r.cfg,m=r.m;return `<tr>${i!=null?`<td class="mono">${i}</td>`:''}<td>${esc(r.name)}</td><td class="mono">${c.B}</td><td class="mono">${c.S}</td><td class="mono">${c.N}</td><td>${POLN[c.pol]}${c.pol!=='FIFO'?(c.aging?' + env.':''):''}</td><td>${c.mutex?'Sí':'<span class="st st-rechazado">No</span>'}</td><td class="mono">${m.served}</td><td class="mono">${m.rejected}</td><td class="mono">${m.avg.toFixed(2)}</td><td class="mono">${m.max}</td><td class="mono">${m.util.toFixed(1)}%</td><td class="mono">${m.races}</td><td class="mono">${m.T}</td></tr>`;}
+function renderHist(){$('hist').innerHTML=HIST.length?HIST.map((r,i)=>histRow(r,i+1)).join(''):'<tr><td colspan="14" class="hint">Cada simulación que termina se registra aquí.</td></tr>';}
+
+function renderCases(){
+  $('cases').innerHTML=CASES.map((c,i)=>`<div class="case ${c.custom?'custom':''}">
+    <h4>${i+1}. ${esc(c.name)}</h4><p>${esc(c.desc)}</p>
+    <div class="params">B=${c.B} · S=${c.S} · N=${c.N} · llegada ${c.aMin}–${c.aMax}u · corte ${c.cMin}–${c.cMax}u · ${POLN[c.pol]}${c.pol!=='FIFO'&&c.aging?' + env.':''} · ${c.mutex?'mutex':'sin mutex'}</div>
+    <div class="btns"><button class="btn primary" type="button" data-load="${i}">Cargar en simulador</button></div></div>`).join('');
+  document.querySelectorAll('[data-load]').forEach(b=>b.onclick=()=>loadCase(+b.dataset.load));
+}
+function loadCase(i){const c=CASES[i];writeCfg(c);$('fCase').value=String(i);reset(c.name);document.querySelector('.tab[data-view="sim"]').click();window.scrollTo({top:0});}
+$('bBatch').onclick=()=>{$('batch').innerHTML=CASES.map(c=>{const s=runToEnd(c);return histRow({name:c.name,cfg:c,m:metrics(s)},null);}).join('');};
+
+/* ═════════════════════ Código ═════════════════════ */
+const CODE={
+c:{run:'Compilar y ejecutar:  gcc barbero.c -o barbero -pthread  &&  ./barbero',src:`/* Problema del Barbero Dormilón con N barberos — C + pthreads
+ * Semáforos: clientes (clientes esperando), barberos (barberos listos)
+ * Mutex: protege la variable compartida 'esperando'                     */
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <semaphore.h>
+#include <unistd.h>
+
+#define BARBEROS 2      /* número de hilos barbero          */
+#define SILLAS   4      /* sillas de la sala de espera      */
+#define CLIENTES 15     /* número de hilos cliente          */
+
+sem_t clientes;                                    /* inicia en 0 */
+sem_t barberos;                                    /* inicia en 0 */
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+int esperando = 0;                                 /* memoria compartida */
+int atendidos = 0, rechazados = 0;
+
+void *barbero(void *arg) {
+    int id = *(int *)arg;                          /* dato privado (pila) */
+    while (1) {
+        sem_wait(&clientes);                       /* duerme si no hay clientes */
+        pthread_mutex_lock(&mutex);                /* --- sección crítica --- */
+        esperando--;
+        sem_post(&barberos);                       /* llama a un cliente */
+        printf("[B%d] corta el pelo   | esperando = %d\\n", id, esperando);
+        pthread_mutex_unlock(&mutex);              /* --- fin sección crítica --- */
+        usleep((200 + rand() % 300) * 1000);       /* cortar_pelo() */
+    }
+    return NULL;
+}
+
+void *cliente(void *arg) {
+    int id = *(int *)arg;
+    pthread_mutex_lock(&mutex);                    /* --- sección crítica --- */
+    if (esperando < SILLAS) {
+        esperando++;
+        printf("  C%-2d se sienta       | esperando = %d\\n", id, esperando);
+        sem_post(&clientes);                       /* despierta a un barbero */
+        pthread_mutex_unlock(&mutex);              /* liberar ANTES de esperar */
+        sem_wait(&barberos);                       /* espera su turno */
+        pthread_mutex_lock(&mutex); atendidos++; pthread_mutex_unlock(&mutex);
+    } else {
+        rechazados++;
+        printf("  C%-2d se va: sala llena\\n", id);
+        pthread_mutex_unlock(&mutex);
+    }
+    return NULL;
+}
+
+int main(void) {
+    pthread_t tb[BARBEROS], tc[CLIENTES];
+    int idb[BARBEROS], idc[CLIENTES];
+    srand(7);
+    sem_init(&clientes, 0, 0);
+    sem_init(&barberos, 0, 0);
+
+    for (int i = 0; i < BARBEROS; i++) {
+        idb[i] = i + 1;
+        pthread_create(&tb[i], NULL, barbero, &idb[i]);
+    }
+    for (int i = 0; i < CLIENTES; i++) {
+        idc[i] = i + 1;
+        pthread_create(&tc[i], NULL, cliente, &idc[i]);
+        usleep((rand() % 250) * 1000);             /* llegada aleatoria */
+    }
+    for (int i = 0; i < CLIENTES; i++) pthread_join(tc[i], NULL);
+    sleep(1);                                      /* deja terminar el último corte */
+
+    printf("\\nAtendidos: %d | Se fueron: %d\\n", atendidos, rechazados);
+    sem_destroy(&clientes);
+    sem_destroy(&barberos);
+    return 0;                                      /* termina el proceso y sus hilos */
+}
+`},
+py:{run:'Ejecutar:  python3 barbero.py',src:`# Problema del Barbero Dormilón con N barberos — Python + threading
+import threading, time, random
+
+BARBEROS, SILLAS, CLIENTES = 2, 4, 15
+
+clientes = threading.Semaphore(0)   # clientes esperando
+barberos = threading.Semaphore(0)   # barberos listos
+mutex = threading.Lock()            # protege 'esperando'
+esperando = 0                       # memoria compartida
+atendidos = rechazados = 0
+cerrar = threading.Event()
+
+def barbero(id):
+    global esperando
+    while True:
+        clientes.acquire()                      # duerme si no hay clientes
+        if cerrar.is_set():
+            break
+        with mutex:                             # sección crítica
+            esperando -= 1
+            barberos.release()                  # llama a un cliente
+            print(f"[B{id}] corta el pelo   | esperando = {esperando}")
+        time.sleep(random.uniform(0.2, 0.5))    # cortar_pelo()
+    print(f"[B{id}] cierra su silla")
+
+def cliente(id):
+    global esperando, atendidos, rechazados
+    with mutex:                                 # sección crítica
+        if esperando >= SILLAS:
+            rechazados += 1
+            print(f"  C{id:<2} se va: sala llena")
+            return
+        esperando += 1
+        print(f"  C{id:<2} se sienta       | esperando = {esperando}")
+        clientes.release()                      # despierta a un barbero
+    barberos.acquire()                          # espera su turno (fuera del mutex)
+    with mutex:
+        atendidos += 1
+
+if __name__ == "__main__":
+    random.seed(7)
+    hb = [threading.Thread(target=barbero, args=(i + 1,)) for i in range(BARBEROS)]
+    for h in hb: h.start()
+    hc = []
+    for i in range(CLIENTES):
+        h = threading.Thread(target=cliente, args=(i + 1,))
+        h.start(); hc.append(h)
+        time.sleep(random.uniform(0, 0.25))     # llegada aleatoria
+    for h in hc: h.join()
+    time.sleep(0.6)                             # último corte
+    cerrar.set()
+    for _ in hb: clientes.release()             # despierta para cerrar
+    for h in hb: h.join()
+    print(f"\\nAtendidos: {atendidos} | Se fueron: {rechazados}")
+`},
+pseudo:{run:'Pseudocódigo (Tanenbaum, generalizado a N barberos)',src:`semáforo clientes = 0      // clientes esperando
+semáforo barberos = 0      // barberos listos para cortar
+semáforo mutex    = 1      // exclusión mutua sobre 'esperando'
+entero   esperando = 0
+constante SILLAS = S
+
+hilo Barbero(id):                 // se crean B hilos
+    repetir siempre:
+        wait(clientes)            // si no hay clientes, se duerme
+        wait(mutex)
+            esperando = esperando - 1
+            signal(barberos)      // un barbero listo
+        signal(mutex)
+        cortar_pelo()
+
+hilo Cliente(id):                 // se crean N hilos
+    wait(mutex)
+    si esperando < SILLAS:
+        esperando = esperando + 1
+        signal(clientes)          // despierta a un barbero si duerme
+        signal(mutex)
+        wait(barberos)            // espera a que lo llamen
+        recibir_corte()
+    si no:
+        signal(mutex)             // sala llena: se va
+`}};
+function hl(src){
+  let s=esc(src);
+  s=s.replace(/(\/\*[\s\S]*?\*\/|\/\/[^\n]*|#(?! *include)[^\n]*)/g,'<span class="cm">$1</span>');
+  return s;
+}
+let curCode='c';
+function showCode(k){curCode=k;$('codeBox').innerHTML=hl(CODE[k].src);$('codeRun').textContent=CODE[k].run;
+  document.querySelectorAll('[data-code]').forEach(b=>b.classList.toggle('primary',b.dataset.code===k));}
+document.querySelectorAll('[data-code]').forEach(b=>b.onclick=()=>showCode(b.dataset.code));
+$('bCopy').onclick=()=>{
+  const txt=CODE[curCode].src;
+  const fallback=()=>{const r=document.createRange();r.selectNodeContents($('codeBox'));const sel=getSelection();sel.removeAllRanges();sel.addRange(r);toast('Texto seleccionado: usa Ctrl+C');};
+  try{navigator.clipboard.writeText(txt).then(()=>toast('Código copiado'),fallback);}catch(e){fallback();}
+};
+
+/* ═════════════════════ Arranque ═════════════════════ */
+const POLICY_HTML=`
+  <h3>Políticas de uso</h3>
+  <ol>
+    <li><b>Finalidad.</b> Es una herramienta educativa del curso SIS 215 Sistemas Operativos (UNA Puno) para mostrar cómo hilos, semáforos y exclusión mutua resuelven el problema del barbero dormilón.</li>
+    <li><b>Uso permitido.</b> Puedes usarlo, exponerlo y modificarlo con fines académicos, citando la fuente.</li>
+    <li><b>Alcance.</b> La simulación avanza por unidades de tiempo discretas. Sus resultados ilustran el comportamiento del algoritmo; no miden el rendimiento de un sistema operativo real.</li>
+    <li><b>Sin garantías.</b> El simulador y el código en C y Python se ofrecen como ejemplos didácticos, tal como están.</li>
+    <li><b>Datos ficticios.</b> Todos los clientes, tiempos y prioridades los genera el programa a partir de una semilla. No representan a personas reales.</li>
+  </ol>
+  <h3>Política de privacidad</h3>
+  <ol>
+    <li><b>No recolectamos datos personales.</b> El simulador no pide nombre, correo, teléfono ni ningún otro dato tuyo.</li>
+    <li><b>Procesamiento local.</b> Toda la simulación se ejecuta en tu navegador. Ningún resultado se envía a un servidor.</li>
+    <li><b>Almacenamiento en tu equipo.</b> Solo se guarda tu preferencia de tema (claro u oscuro) en el almacenamiento local del navegador. Se borra al limpiar los datos del sitio.</li>
+    <li><b>Servicios de terceros.</b> Las tipografías se descargan de Google Fonts, que puede registrar tu dirección IP según su propia política de privacidad.</li>
+    <li><b>Marco legal.</b> Si una versión futura registrara datos de clientes reales (por ejemplo, la agenda de una barbería), se aplicaría la Ley N.° 29733, Ley de Protección de Datos Personales del Perú, y su reglamento: consentimiento previo e informado, uso solo para la finalidad declarada, derechos ARCO (acceso, rectificación, cancelación y oposición) y medidas de seguridad sobre la base de datos.</li>
+    <li><b>Privacidad entre hilos.</b> En el modelo, cada hilo guarda sus datos en su propia pila y nadie más los lee. Los datos compartidos (la cola y el contador <code>esperando</code>) solo se modifican dentro de la sección crítica.</li>
+  </ol>
+  <p class="upd">Última actualización: 12 de octubre de 2026.</p>`;
+document.querySelectorAll('[data-policy]').forEach(d=>d.innerHTML=POLICY_HTML);
+
+function fillCaseSelects(){
+  const opts=CASES.map((c,i)=>`<option value="${i}">${i+1}. ${esc(c.name)}</option>`).join('');
+  const cur=$('fCase').value, wcur=$('wCase').value;
+  $('fCase').innerHTML=opts+'<option value="">Personalizado</option>';
+  $('wCase').innerHTML=opts;
+  $('fCase').value=cur===''&&currentName==='Personalizado'?'':(cur||'0'); $('wCase').value=wcur||'0';
+  $('wCaseDesc').textContent=CASES[+$('wCase').value].desc;
+}
+$('wCase').onchange=()=>{$('wCaseDesc').textContent=CASES[+$('wCase').value].desc;};
+$('wAccept').onchange=()=>{$('wEnter').disabled=!$('wAccept').checked;};
+$('wPolToggle').onclick=()=>{const f=$('wPolFull');f.hidden=!f.hidden;$('wPolToggle').setAttribute('aria-expanded',!f.hidden);$('wPolToggle').textContent=f.hidden?'Leer las políticas completas':'Ocultar las políticas';};
+$('wEnter').onclick=()=>{
+  $('welcome').hidden=true; $('app').hidden=false; window.scrollTo({top:0});
+  loadCase(+$('wCase').value);
+  for(let i=0;i<6;i++) step(SIM); render();
+};
+$('bHome').onclick=()=>{stop();$('app').hidden=true;$('welcome').hidden=false;$('wCase').value=$('fCase').value||'0';$('wCaseDesc').textContent=CASES[+$('wCase').value].desc;window.scrollTo({top:0});};
+
+renderCases(); renderHist(); showCode('c'); fillCaseSelects();
+writeCfg(CASES[0]); reset('Caso clásico');
+for(let i=0;i<9;i++) step(SIM); render();   // abre con la simulación ya en marcha
+</script>
